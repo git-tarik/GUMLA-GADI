@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-dotenv
+requests
+duckduckgo-search
+
+# Core Libraries (Minimal Stack)
+numpy<2
+langchain-core
+langchain-community
+langchain-google-genai

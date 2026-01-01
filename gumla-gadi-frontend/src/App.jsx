@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import HamsafarChat from './components/HamsafarChat';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/about" element={<div className="p-20 text-center">About Page (Coming Soon)</div>} />
         <Route path="/contact" element={<div className="p-20 text-center">Contact Page (Coming Soon)</div>} />
       </Routes>
+      <HamsafarChat />
     </div>
   );
 }
