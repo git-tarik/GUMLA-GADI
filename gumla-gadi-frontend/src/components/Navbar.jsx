@@ -32,10 +32,15 @@ const Navbar = () => {
 
                         {user ? (
                             <div className="flex items-center space-x-4 ml-4">
-                                <span className="flex items-center text-gray-700 text-sm font-medium">
-                                    <User size={16} className="mr-1 text-indigo-600" />
-                                    {user.name}
-                                </span>
+                                {user.role === 'admin' && (
+                                    <Link to="/admin" className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold hover:bg-red-200 transition-colors uppercase tracking-wider">
+                                        Admin Panel
+                                    </Link>
+                                )}
+                                <Link to="/dashboard" className="flex items-center text-gray-700 text-sm font-medium hover:text-indigo-600 transition-colors">
+                                    <User size={16} className="mr-1" />
+                                    Dashboard
+                                </Link>
                                 <button
                                     onClick={handleLogout}
                                     className="flex items-center text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
@@ -45,7 +50,10 @@ const Navbar = () => {
                                 </button>
                             </div>
                         ) : (
-                            <Link to="/login" className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors">Login</Link>
+                            <div className="flex items-center space-x-4">
+                                <Link to="/login" className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</Link>
+                                <Link to="/signup" className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors">Sign Up</Link>
+                            </div>
                         )}
                     </div>
 
@@ -74,6 +82,10 @@ const Navbar = () => {
                                 <div className="px-3 py-2 text-indigo-600 font-bold border-t border-gray-100 mt-2">
                                     Hello, {user.name}
                                 </div>
+                                {user.role === 'admin' && (
+                                    <Link to="/admin" onClick={() => setIsOpen(false)} className="block text-red-600 hover:bg-red-50 px-3 py-2 rounded-md text-base font-bold">Admin Panel</Link>
+                                )}
+                                <Link to="/dashboard" onClick={() => setIsOpen(false)} className="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium">Dashboard</Link>
                                 <button
                                     onClick={() => { handleLogout(); setIsOpen(false); }}
                                     className="block w-full text-left text-red-600 font-bold hover:bg-gray-50 px-3 py-2 rounded-md text-base"
@@ -82,7 +94,10 @@ const Navbar = () => {
                                 </button>
                             </>
                         ) : (
-                            <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full text-left text-indigo-600 font-bold hover:bg-gray-50 px-3 py-2 rounded-md text-base">Login</Link>
+                            <>
+                                <Link to="/login" onClick={() => setIsOpen(false)} className="block w-full text-left text-gray-700 font-bold hover:bg-gray-50 px-3 py-2 rounded-md text-base">Login</Link>
+                                <Link to="/signup" onClick={() => setIsOpen(false)} className="block w-full text-left text-indigo-600 font-bold hover:bg-gray-50 px-3 py-2 rounded-md text-base">Sign Up</Link>
+                            </>
                         )}
                     </div>
                 </div>

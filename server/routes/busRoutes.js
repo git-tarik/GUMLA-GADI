@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Bus = require('../models/Bus');
 
+const { protect, adminOnly } = require('../middleware/authMiddleware');
+
 // @desc    Get all buses or filter by source/destination
 // @route   GET /api/buses
 // @access  Public
@@ -26,8 +28,8 @@ router.get('/', async (req, res) => {
 
 // @desc    Create a new bus
 // @route   POST /api/buses
-// @access  Private (Admin) - Currently Open
-router.post('/', async (req, res) => {
+// @access  Private (Admin)
+router.post('/', protect, adminOnly, async (req, res) => {
     const { name, source, destination, departureTime, arrivalTime, price, type, stand, contact, id } = req.body;
 
     try {
@@ -48,6 +50,25 @@ router.post('/', async (req, res) => {
         res.status(201).json(newBus);
     } catch (err) {
         res.status(400).json({ message: err.message });
+    }
+});
+
+// @desc    Delete a bus
+// @route   DELETE /api/buses/:id
+// @access  Private (Admin)
+router.delete('/:id', protect, adminOnly, async (req, res) => {
+    try {
+        // Find by custom ID first (since frontend uses that), fallback to _id
+        const bus = await Bus.findOne({ id: req.params.id }) || await Bus.findById(req.params.id);
+
+        if (bus) {
+            await Bus.deleteOne({ _id: bus._id });
+            res.json({ message: 'Bus removed' });
+        } else {
+            res.status(404).json({ message: 'Bus not found' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
