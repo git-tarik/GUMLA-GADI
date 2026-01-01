@@ -9,11 +9,13 @@ const Home = () => {
     const [to, setTo] = useState('');
     const [filteredBuses, setFilteredBuses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const fetchBuses = async (searchFrom = '', searchTo = '') => {
         try {
             setLoading(true);
+            setError('');
             const params = {};
             if (searchFrom) params.from = searchFrom;
             if (searchTo) params.to = searchTo;
@@ -23,6 +25,7 @@ const Home = () => {
             setLoading(false);
         } catch (error) {
             console.error('Error fetching buses:', error);
+            setError('Failed to fetch buses. Please try again later.');
             setLoading(false);
         }
     };
@@ -87,7 +90,12 @@ const Home = () => {
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">Available Buses</h2>
                 {loading ? (
                     <div className="text-center py-12">
-                        <p className="text-gray-500 text-lg">Loading buses...</p>
+                        <p className="text-gray-500 text-lg">Loading Gumla Buses...</p>
+                    </div>
+                ) : error ? (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center" role="alert">
+                        <strong className="font-bold">Error! </strong>
+                        <span className="block sm:inline">{error}</span>
                     </div>
                 ) : filteredBuses.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
