@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Bus } from 'lucide-react';
+import config from '../config';
 
 const AdminDashboard = () => {
     const { user } = useAuth();
@@ -34,7 +35,7 @@ const AdminDashboard = () => {
 
     const fetchBuses = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/buses');
+            const response = await axios.get(`${config.API_BASE_URL}/api/buses`);
             setBuses(response.data);
             setLoading(false);
         } catch (error) {
@@ -52,16 +53,16 @@ const AdminDashboard = () => {
         setMessage({ type: '', text: '' });
 
         try {
-            const config = {
+            const configHeaders = {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
 
-            await axios.post('http://localhost:5000/api/buses', {
+            await axios.post(`${config.API_BASE_URL}/api/buses`, {
                 ...formData,
                 id: Math.floor(Math.random() * 100000) // Temporary ID generation
-            }, config);
+            }, configHeaders);
 
             setMessage({ type: 'success', text: 'Bus Added Successfully' });
             setFormData({
@@ -84,12 +85,12 @@ const AdminDashboard = () => {
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this bus?')) {
             try {
-                const config = {
+                const configHeaders = {
                     headers: {
                         Authorization: `Bearer ${user.token}`,
                     },
                 };
-                await axios.delete(`http://localhost:5000/api/buses/${id}`, config);
+                await axios.delete(`${config.API_BASE_URL}/api/buses/${id}`, configHeaders);
                 fetchBuses();
             } catch (error) {
                 alert(error.response?.data?.message || 'Error deleting bus');

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Phone, MapPin, Clock, IndianRupee } from 'lucide-react';
 import axios from 'axios';
+import config from '../config';
 
 const BusDetails = () => {
     const { id } = useParams();
@@ -12,7 +13,7 @@ const BusDetails = () => {
         const fetchBus = async () => {
             try {
                 // Fetch all buses and find (Temporary until API supports ID)
-                const response = await axios.get('http://localhost:5000/api/buses');
+                const response = await axios.get(`${config.API_BASE_URL}/api/buses`);
                 const foundBus = response.data.find(b => b.id === parseInt(id));
                 setBus(foundBus);
                 setLoading(false);

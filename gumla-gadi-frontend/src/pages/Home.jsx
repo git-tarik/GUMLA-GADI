@@ -3,6 +3,7 @@ import { Search, Clock, MapPin, Bot, ArrowRight, Map, Info } from 'lucide-react'
 import BusCard from '../components/BusCard';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import config from '../config';
 
 const Home = () => {
     const [from, setFrom] = useState('');
@@ -20,7 +21,7 @@ const Home = () => {
             if (searchFrom) params.from = searchFrom;
             if (searchTo) params.to = searchTo;
 
-            const response = await axios.get('http://localhost:5000/api/buses', { params });
+            const response = await axios.get(`${config.API_BASE_URL}/api/buses`, { params });
             setFilteredBuses(response.data);
             setLoading(false);
         } catch (error) {

@@ -20,8 +20,9 @@ def fetch_bus_data(query: str = "") -> str:
     """Useful for getting the list of available buses, their schedules, prices, and stands. 
     Always use this when the user asks about bus timings, price, or availability."""
     try:
-        # Assuming the Node.js backend is running on port 5000
-        response = requests.get("http://localhost:5000/api/buses")
+        # Get backend URL from env or default to localhost
+        backend_url = os.getenv("BACKEND_URL", "http://localhost:5000")
+        response = requests.get(f"{backend_url}/api/buses")
         if response.status_code == 200:
             return str(response.json())
         else:
