@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173', // Vite default port
+    origin: '*', // Allow all origins for deployment
     credentials: true
 }));
 
