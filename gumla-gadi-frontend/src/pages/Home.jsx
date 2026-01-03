@@ -238,7 +238,7 @@ const Home = () => {
                                     <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                                         Dunduriya Stand
                                     </h3>
-                                    <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide">Private / Old</span>
+                                    <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide"> Old Government Bus Stand</span>
                                 </div>
                                 <p className="text-gray-600 text-sm leading-relaxed mb-4">
                                     Hub for <span className="font-semibold text-gray-900">Regional</span> connections.
