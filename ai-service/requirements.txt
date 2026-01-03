@@ -1,11 +1,11 @@
-fastapi
-uvicorn
-python-dotenv
-requests
-duckduckgo-search
+fastapi==0.111.0
+uvicorn==0.30.1
+python-dotenv==1.0.1
+requests==2.32.3
+duckduckgo-search==6.1.6
 
 # Core Libraries (Minimal Stack)
 numpy<2
-langchain-core
-langchain-community
-langchain-google-genai
+langchain-core==0.2.5
+langchain-community==0.2.5
+langchain-google-genai==1.0.6
