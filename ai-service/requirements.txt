@@ -6,6 +6,6 @@ duckduckgo-search==6.1.6
 
 # Core Libraries (Minimal Stack)
 numpy<2
-langchain-core==0.2.5
+langchain-core==0.2.10
 langchain-community==0.2.5
 langchain-google-genai==1.0.6
