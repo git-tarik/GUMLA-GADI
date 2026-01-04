@@ -1,0 +1,16 @@
+# --- GLOBAL IGNORES ---
+
+# Dependency Directories (Block these everywhere)
+**/node_modules/
+**/venv/
+**/env/
+**/bin/
+**/__pycache__/
+
+# Compiled/Junk Files
+*.pyc
+*.log
+*.DS_Store
+
+# Secrets (Block these everywhere)
+**/.env
