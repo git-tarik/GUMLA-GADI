@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BusFront, Heart, MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
+import { Heart, MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
+import logo from '../assets/gumla-gadi-logo.png';
 
 const Footer = () => {
     return (
@@ -10,11 +11,8 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* Brand Section */}
                     <div className="lg:col-span-1">
-                        <div className="flex items-center space-x-2 mb-4">
-                            <div className="bg-primary-500 p-2 rounded-lg">
-                                <BusFront className="h-6 w-6 text-white" />
-                            </div>
-                            <span className="text-xl font-bold">Gumla Gadi</span>
+                        <div className="flex items-center mb-4">
+                            <img src={logo} alt="Gumla Gadi" className="h-12 w-auto object-contain" />
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed mb-4">
                             Your reliable companion for bus tracking in Gumla. Real-time schedules, accurate information, and hassle-free travel.
