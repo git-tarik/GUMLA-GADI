@@ -116,86 +116,86 @@ const Navbar = () => {
             />
 
             {/* Mobile Sidebar */}
-            <div className={`fixed top-0 left-0 h-full w-72 bg-secondary-500 z-50 md:hidden transform transition-transform duration-300 ease-out shadow-2xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                {/* Sidebar Header */}
-                <div className="bg-gradient-to-r from-primary-600 to-primary-500 px-5 py-6">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-white/20 p-2 rounded-lg">
-                                <BusFront className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                                <h2 className="text-lg font-bold text-white">Gumla Gadi</h2>
-                                <p className="text-xs text-white/70">Bus Tracking</p>
-                            </div>
+            <div className={`fixed top-0 right-0 h-full w-72 bg-secondary-500 z-50 md:hidden transform transition-transform duration-300 ease-out shadow-2xl ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                {/* Sidebar Header - matches navbar h-16 */}
+                <div className="bg-secondary-500 h-16 px-4 flex items-center justify-between border-b border-primary-300/30">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-primary-500 p-2 rounded-lg">
+                            <BusFront className="h-5 w-5 text-white" />
                         </div>
-                        <button
-                            onClick={() => setIsOpen(false)}
-                            className="text-white/80 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-all"
-                        >
-                            <X size={22} />
-                        </button>
+                        <div>
+                            <h2 className="text-base font-bold text-white leading-tight">Gumla Gadi</h2>
+                            <p className="text-[10px] text-primary-300 uppercase tracking-wider">Bus Tracking</p>
+                        </div>
                     </div>
-                    
-                    {/* User Info in Sidebar Header */}
-                    {user && (
-                        <div className="mt-5 pt-5 border-t border-white/20">
-                            <div className="flex items-center gap-3">
-                                <div className="w-11 h-11 bg-white/20 rounded-full flex items-center justify-center">
-                                    <User size={22} className="text-white" />
-                                </div>
-                                <div>
-                                    <p className="font-semibold text-white">{user.name}</p>
-                                    <p className="text-xs text-white/70 truncate max-w-[150px]">{user.email}</p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <button
+                        onClick={() => setIsOpen(false)}
+                        className="text-gray-300 hover:text-white p-2 rounded-lg hover:bg-primary-400/20 transition-all"
+                    >
+                        <X size={22} />
+                    </button>
                 </div>
 
                 {/* Sidebar Navigation */}
                 <div className="py-4 px-3 flex-1 overflow-y-auto">
+                    {/* User Info Section */}
+                    {user && (
+                        <div className="mx-1 mb-4 p-3 bg-primary-400/10 rounded-lg border border-primary-300/20">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-primary-400/20 rounded-full flex items-center justify-center border border-primary-300/30">
+                                    <User size={20} className="text-primary-300" />
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-white text-sm">{user.name}</p>
+                                    <p className="text-xs text-primary-200/70 truncate max-w-[150px]">{user.email}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <p className="px-4 mb-2 text-xs font-semibold text-primary-300/60 uppercase tracking-wider">Menu</p>
                     <div className="space-y-1">
                         <Link 
                             to="/" 
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive('/') ? 'bg-primary-500/20 text-primary-300' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${isActive('/') ? 'bg-primary-500 text-white' : 'text-gray-200 hover:bg-primary-400/15 hover:text-white'}`}
                         >
-                            <Home size={20} className={isActive('/') ? 'text-primary-400' : 'text-gray-500'} />
+                            <Home size={20} className={isActive('/') ? 'text-white' : 'text-primary-300/60'} />
                             Home
                         </Link>
                         <Link 
                             to="/about" 
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive('/about') ? 'bg-primary-500/20 text-primary-300' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${isActive('/about') ? 'bg-primary-500 text-white' : 'text-gray-200 hover:bg-primary-400/15 hover:text-white'}`}
                         >
-                            <Info size={20} className={isActive('/about') ? 'text-primary-400' : 'text-gray-500'} />
+                            <Info size={20} className={isActive('/about') ? 'text-white' : 'text-primary-300/60'} />
                             About Us
                         </Link>
                         <Link 
                             to="/contact" 
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive('/contact') ? 'bg-primary-500/20 text-primary-300' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${isActive('/contact') ? 'bg-primary-500 text-white' : 'text-gray-200 hover:bg-primary-400/15 hover:text-white'}`}
                         >
-                            <Phone size={20} className={isActive('/contact') ? 'text-primary-400' : 'text-gray-500'} />
+                            <Phone size={20} className={isActive('/contact') ? 'text-white' : 'text-primary-300/60'} />
                             Contact
                         </Link>
                     </div>
 
                     {user && (
                         <>
-                            <div className="my-4 border-t border-white/10"></div>
+                            <div className="my-4 mx-4 border-t border-primary-300/20"></div>
+                            <p className="px-4 mb-2 text-xs font-semibold text-primary-300/60 uppercase tracking-wider">Account</p>
                             <div className="space-y-1">
                                 <Link 
                                     to="/dashboard" 
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive('/dashboard') ? 'bg-primary-500/20 text-primary-300' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${isActive('/dashboard') ? 'bg-primary-500 text-white' : 'text-gray-200 hover:bg-primary-400/15 hover:text-white'}`}
                                 >
-                                    <LayoutDashboard size={20} className={isActive('/dashboard') ? 'text-primary-400' : 'text-gray-500'} />
+                                    <LayoutDashboard size={20} className={isActive('/dashboard') ? 'text-white' : 'text-primary-300/60'} />
                                     Dashboard
                                 </Link>
                                 {user.role === 'admin' && (
                                     <Link 
                                         to="/admin" 
-                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive('/admin') ? 'bg-primary-500/20 text-primary-300' : 'text-gray-300 hover:bg-white/5 hover:text-white'}`}
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${isActive('/admin') ? 'bg-accent-400 text-white' : 'text-gray-200 hover:bg-accent-400/15 hover:text-white'}`}
                                     >
-                                        <Shield size={20} className={isActive('/admin') ? 'text-primary-400' : 'text-gray-500'} />
+                                        <Shield size={20} className={isActive('/admin') ? 'text-white' : 'text-accent-300'} />
                                         Admin Panel
                                     </Link>
                                 )}
@@ -205,11 +205,11 @@ const Navbar = () => {
                 </div>
 
                 {/* Sidebar Footer */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-secondary-700">
+                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-primary-300/20 bg-secondary-600">
                     {user ? (
                         <button
                             onClick={handleLogout}
-                            className="w-full flex items-center justify-center gap-2 bg-primary-500 text-white font-semibold py-3 px-4 rounded-xl hover:bg-primary-600 transition-all"
+                            className="w-full flex items-center justify-center gap-2 bg-primary-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-primary-400 transition-all"
                         >
                             <LogOut size={18} />
                             Sign Out
@@ -218,13 +218,13 @@ const Navbar = () => {
                         <div className="space-y-2">
                             <Link 
                                 to="/login" 
-                                className="block w-full text-center font-semibold py-3 px-4 rounded-xl border-2 border-primary-500 text-primary-500 hover:bg-primary-50 transition-all"
+                                className="block w-full text-center font-semibold py-3 px-4 rounded-lg border border-primary-400 text-primary-300 hover:bg-primary-400/15 transition-all"
                             >
                                 Login
                             </Link>
                             <Link 
                                 to="/signup" 
-                                className="block w-full text-center font-semibold py-3 px-4 rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-all"
+                                className="block w-full text-center font-semibold py-3 px-4 rounded-lg bg-primary-500 text-white hover:bg-primary-400 transition-all"
                             >
                                 Sign Up
                             </Link>
