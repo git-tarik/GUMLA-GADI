@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, BusFront, LogOut, User, Home, Info, Phone, Shield, LayoutDashboard } from 'lucide-react';
+import { Menu, X, LogOut, User, Home, Info, Phone, Shield, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/gumla-gadi-logo.png';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -40,14 +41,8 @@ const Navbar = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
-                            <Link to="/" className="flex items-center space-x-2 group">
-                                <div className="bg-primary-500 p-2 rounded-lg group-hover:bg-primary-400 transition-colors">
-                                    <BusFront className="h-6 w-6 text-white" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-xl font-bold text-white leading-tight">Gumla Gadi</span>
-                                    <span className="text-[10px] text-primary-300 uppercase tracking-wider font-medium">Bus Tracking</span>
-                                </div>
+                            <Link to="/" className="flex items-center group">
+                                <img src={logo} alt="Gumla Gadi" className="h-24 w-auto object-contain" />
                             </Link>
                         </div>
 
@@ -119,14 +114,8 @@ const Navbar = () => {
             <div className={`fixed top-0 right-0 h-full w-72 bg-secondary-500 z-50 md:hidden transform transition-transform duration-300 ease-out shadow-2xl ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                 {/* Sidebar Header - matches navbar h-16 */}
                 <div className="bg-secondary-500 h-16 px-4 flex items-center justify-between border-b border-primary-300/30">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-primary-500 p-2 rounded-lg">
-                            <BusFront className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                            <h2 className="text-base font-bold text-white leading-tight">Gumla Gadi</h2>
-                            <p className="text-[10px] text-primary-300 uppercase tracking-wider">Bus Tracking</p>
-                        </div>
+                    <div className="flex items-center">
+                        <img src={logo} alt="Gumla Gadi" className="h-20 w-auto object-contain" />
                     </div>
                     <button
                         onClick={() => setIsOpen(false)}
