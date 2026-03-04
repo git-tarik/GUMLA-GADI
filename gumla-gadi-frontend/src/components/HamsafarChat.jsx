@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { MessageCircle, X, Send, Bot } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, Sparkles } from 'lucide-react';
 import config from '../config';
 
 const HamsafarChat = () => {
@@ -30,7 +30,6 @@ const HamsafarChat = () => {
         setLoading(true);
 
         try {
-            // Hit the Python Microservice
             const response = await axios.post(`${config.AI_API_URL}/chat`, {
                 query: input
             });
@@ -51,21 +50,24 @@ const HamsafarChat = () => {
 
             {/* Chat Window */}
             {isOpen && (
-                <div className="mb-4 w-80 md:w-96 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 pointer-events-auto transform transition-all duration-300 ease-in-out">
+                <div className="mb-4 w-80 md:w-96 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 pointer-events-auto animate-slide-up">
                     {/* Header */}
-                    <div className="bg-indigo-600 p-4 flex justify-between items-center text-white">
-                        <div className="flex items-center gap-2">
-                            <div className="bg-white/20 p-1.5 rounded-full">
+                    <div className="bg-gradient-to-r from-primary-500 to-primary-600 p-4 flex justify-between items-center text-white">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
                                 <Bot size={20} />
                             </div>
                             <div>
-                                <h3 className="font-bold text-sm">HamsafarAI</h3>
-                                <p className="text-indigo-100 text-xs text-opacity-80">Apka Hamsafar</p>
+                                <h3 className="font-bold text-sm flex items-center gap-1">
+                                    HamsafarAI
+                                    <Sparkles size={12} className="text-yellow-300" />
+                                </h3>
+                                <p className="text-white/80 text-xs">Your Travel Assistant</p>
                             </div>
                         </div>
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="hover:bg-white/20 p-1 rounded-full transition-colors"
+                            className="hover:bg-white/20 p-2 rounded-lg transition-colors"
                         >
                             <X size={18} />
                         </button>
@@ -79,9 +81,9 @@ const HamsafarChat = () => {
                                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
-                                    className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm ${msg.sender === 'user'
-                                        ? 'bg-indigo-600 text-white rounded-br-none'
-                                        : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-none'
+                                    className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${msg.sender === 'user'
+                                        ? 'bg-primary-500 text-white rounded-br-md'
+                                        : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-md'
                                         }`}
                                 >
                                     {msg.text}
@@ -90,8 +92,12 @@ const HamsafarChat = () => {
                         ))}
                         {loading && (
                             <div className="flex justify-start">
-                                <div className="bg-gray-200 px-4 py-2 rounded-2xl rounded-bl-none text-xs text-gray-500 animate-pulse">
-                                    Hamsafar is typing...
+                                <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-md shadow-sm border border-gray-100">
+                                    <div className="flex items-center gap-1">
+                                        <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                        <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                        <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -104,13 +110,13 @@ const HamsafarChat = () => {
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="Ask about buses..."
-                            className="flex-1 px-3 py-2 border border-gray-200 rounded-full focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm"
+                            placeholder="Ask about buses, routes..."
+                            className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 text-sm transition-all"
                         />
                         <button
                             type="submit"
                             disabled={loading || !input.trim()}
-                            className="bg-indigo-600 text-white p-2.5 rounded-full hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="bg-primary-500 text-white p-2.5 rounded-xl hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
                         >
                             <Send size={18} />
                         </button>
@@ -121,12 +127,15 @@ const HamsafarChat = () => {
             {/* Floating Toggle Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="pointer-events-auto bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center group"
+                className="pointer-events-auto bg-primary-500 hover:bg-primary-600 text-white p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group relative"
             >
+                {!isOpen && (
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse border-2 border-white"></span>
+                )}
                 {isOpen ? (
                     <X size={24} />
                 ) : (
-                    <MessageCircle size={28} className="group-hover:animate-pulse" />
+                    <MessageCircle size={26} className="group-hover:scale-110 transition-transform" />
                 )}
             </button>
         </div>

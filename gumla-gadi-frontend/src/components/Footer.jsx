@@ -1,34 +1,104 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BusFront, Heart } from 'lucide-react';
+import { BusFront, Heart, MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-900 text-white pt-10 pb-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-                    {/* Brand */}
-                    <div className="mb-6 md:mb-0 flex items-center space-x-2">
-                        <BusFront className="h-8 w-8 text-orange-500" />
-                        <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-500">
-                            Gumla Gadi
-                        </span>
+        <footer className="bg-secondary-500 text-white">
+            {/* Main Footer */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {/* Brand Section */}
+                    <div className="lg:col-span-1">
+                        <div className="flex items-center space-x-2 mb-4">
+                            <div className="bg-primary-500 p-2 rounded-lg">
+                                <BusFront className="h-6 w-6 text-white" />
+                            </div>
+                            <span className="text-xl font-bold">Gumla Gadi</span>
+                        </div>
+                        <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                            Your reliable companion for bus tracking in Gumla. Real-time schedules, accurate information, and hassle-free travel.
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <MapPin size={14} className="text-primary-400" />
+                            <span>Gumla, Jharkhand, India</span>
+                        </div>
                     </div>
 
-                    {/* Links */}
-                    <div className="flex space-x-8">
-                        <Link to="/" className="text-gray-400 hover:text-orange-500 transition-colors">Home</Link>
-                        <Link to="/about" className="text-gray-400 hover:text-orange-500 transition-colors">About</Link>
-                        <Link to="/contact" className="text-gray-400 hover:text-orange-500 transition-colors">Contact</Link>
-                        <Link to="/admin" className="text-gray-400 hover:text-orange-500 transition-colors">Admin Panel</Link>
+                    {/* Quick Links */}
+                    <div>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-4">Quick Links</h3>
+                        <ul className="space-y-3">
+                            <li>
+                                <Link to="/" className="text-gray-400 hover:text-primary-400 text-sm flex items-center gap-2 transition-colors group">
+                                    <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    Home
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/about" className="text-gray-400 hover:text-primary-400 text-sm flex items-center gap-2 transition-colors group">
+                                    <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    About Us
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/contact" className="text-gray-400 hover:text-primary-400 text-sm flex items-center gap-2 transition-colors group">
+                                    <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    Contact
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Bus Stands */}
+                    <div>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-4">Bus Stands</h3>
+                        <ul className="space-y-3">
+                            <li className="flex items-start gap-2">
+                                <div className="w-2 h-2 bg-primary-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                <div>
+                                    <p className="text-sm text-white font-medium">Gumla Main Depot</p>
+                                    <p className="text-xs text-gray-500">Long-distance routes</p>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-2">
+                                <div className="w-2 h-2 bg-accent-500 rounded-full mt-1.5 flex-shrink-0"></div>
+                                <div>
+                                    <p className="text-sm text-white font-medium">Dunduriya Stand</p>
+                                    <p className="text-xs text-gray-500">Regional connections</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Contact Info */}
+                    <div>
+                        <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-4">Contact Us</h3>
+                        <ul className="space-y-3">
+                            <li className="flex items-center gap-3 text-gray-400 text-sm">
+                                <Mail size={16} className="text-primary-400" />
+                                <span>support@gumlagadi.com</span>
+                            </li>
+                            <li className="flex items-center gap-3 text-gray-400 text-sm">
+                                <Phone size={16} className="text-primary-400" />
+                                <span>+91 XXX XXX XXXX</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+            </div>
 
-                <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
-                    <p>&copy; {new Date().getFullYear()} Gumla Gadi. All rights reserved.</p>
-                    <p className="flex items-center mt-2 md:mt-0">
-                        Built with <Heart className="h-4 w-4 text-red-500 mx-1 fill-current" /> in Jharkhand
-                    </p>
+            {/* Bottom Bar */}
+            <div className="border-t border-white/10">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                        <p className="text-sm text-gray-500">
+                            &copy; {new Date().getFullYear()} Gumla Gadi. All rights reserved.
+                        </p>
+                        <p className="flex items-center text-sm text-gray-500">
+                            Made with <Heart className="h-4 w-4 text-primary-500 mx-1.5 fill-current" /> in Jharkhand
+                        </p>
+                    </div>
                 </div>
             </div>
         </footer>

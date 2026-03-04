@@ -1,82 +1,132 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
+import { LogIn, Mail, Lock, BusFront } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
         try {
             await login(email, password);
-            navigate('/dashboard'); // Redirect to dashboard as per requirement
+            navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Invalid credentials');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
+        <div className="min-h-screen flex bg-gray-50">
+            {/* Left Panel - Branding */}
+            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-500 to-primary-600 p-12 flex-col justify-between">
                 <div>
-                    <div className="mx-auto h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center">
-                        <LogIn className="h-6 w-6 text-indigo-600" />
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                            <BusFront className="h-8 w-8 text-white" />
+                        </div>
+                        <span className="text-2xl font-bold text-white">Gumla Gadi</span>
                     </div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Sign in to your account
-                    </h2>
+                    <h1 className="text-4xl font-bold text-white leading-tight mb-4">
+                        Welcome back to your travel companion
+                    </h1>
+                    <p className="text-white/80 text-lg">
+                        Sign in to access your dashboard, view bookings, and explore bus routes.
+                    </p>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <input
-                                type="email"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Email address"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <input
-                                type="password"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                <p className="text-white/60 text-sm">
+                    Trusted by thousands of travelers in Jharkhand
+                </p>
+            </div>
+
+            {/* Right Panel - Form */}
+            <div className="flex-1 flex items-center justify-center p-8">
+                <div className="max-w-md w-full">
+                    {/* Mobile Logo */}
+                    <div className="lg:hidden text-center mb-8">
+                        <div className="inline-flex items-center gap-2 mb-4">
+                            <div className="bg-primary-500 p-2 rounded-xl">
+                                <BusFront className="h-6 w-6 text-white" />
+                            </div>
+                            <span className="text-xl font-bold text-secondary-500">Gumla Gadi</span>
                         </div>
                     </div>
 
-                    {error && (
-                        <div className="text-red-500 text-sm text-center">
-                            {error}
-                        </div>
-                    )}
+                    <div className="text-center mb-8">
+                        <h2 className="text-2xl font-bold text-secondary-500 mb-2">Sign in to your account</h2>
+                        <p className="text-gray-500">Enter your credentials to continue</p>
+                    </div>
 
-                    <div>
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                            <label className="input-label">Email Address</label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <Mail size={18} className="text-gray-400" />
+                                </div>
+                                <input
+                                    type="email"
+                                    required
+                                    className="input-field pl-11"
+                                    placeholder="you@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="input-label">Password</label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <Lock size={18} className="text-gray-400" />
+                                </div>
+                                <input
+                                    type="password"
+                                    required
+                                    className="input-field pl-11"
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        {error && (
+                            <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-lg text-sm text-center font-medium">
+                                {error}
+                            </div>
+                        )}
+
                         <button
                             type="submit"
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            disabled={loading}
+                            className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
-                            Sign in
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            ) : (
+                                <>
+                                    <LogIn size={18} />
+                                    Sign In
+                                </>
+                            )}
                         </button>
-                    </div>
-                </form>
+                    </form>
 
-                <div className="text-center">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-center mt-8 text-gray-600">
                         Don't have an account?{' '}
-                        <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
-                            Sign up
+                        <Link to="/signup" className="font-semibold text-primary-500 hover:text-primary-600">
+                            Sign up for free
                         </Link>
                     </p>
                 </div>
