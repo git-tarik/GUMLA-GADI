@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, LogOut, User, Home, Info, Phone, Shield, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext';
 import logo from '../assets/gumla-gadi-logo.png';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { user, logout } = useAuth();
+    const { openModal } = useModal();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -29,7 +31,7 @@ const Navbar = () => {
 
     const handleLogout = () => {
         logout();
-        navigate('/login');
+        navigate('/');
         setIsOpen(false);
     };
 
@@ -81,12 +83,18 @@ const Navbar = () => {
                                 </div>
                             ) : (
                                 <div className="flex items-center space-x-3 ml-4 pl-4 border-l border-white/20">
-                                    <Link to="/login" className="text-gray-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                                    <button 
+                                        onClick={() => openModal('login')}
+                                        className="text-gray-200 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                                    >
                                         Login
-                                    </Link>
-                                    <Link to="/signup" className="bg-primary-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-400 transition-all shadow-sm hover:shadow-md">
+                                    </button>
+                                    <button 
+                                        onClick={() => openModal('signup')}
+                                        className="bg-primary-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-400 transition-all shadow-sm hover:shadow-md"
+                                    >
                                         Sign Up
-                                    </Link>
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -205,18 +213,18 @@ const Navbar = () => {
                         </button>
                     ) : (
                         <div className="space-y-2">
-                            <Link 
-                                to="/login" 
+                            <button 
+                                onClick={() => openModal('login')}
                                 className="block w-full text-center font-semibold py-3 px-4 rounded-lg border border-primary-400 text-primary-300 hover:bg-primary-400/15 transition-all"
                             >
                                 Login
-                            </Link>
-                            <Link 
-                                to="/signup" 
+                            </button>
+                            <button 
+                                onClick={() => openModal('signup')}
                                 className="block w-full text-center font-semibold py-3 px-4 rounded-lg bg-primary-500 text-white hover:bg-primary-400 transition-all"
                             >
                                 Sign Up
-                            </Link>
+                            </button>
                         </div>
                     )}
                 </div>

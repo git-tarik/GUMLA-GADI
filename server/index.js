@@ -13,6 +13,7 @@ app.use(express.json());
 
 // CORS Configuration - Allow only production frontend
 const allowedOrigins = [
+    'http://localhost:3000', // Vite default dev port
     'http://localhost:3001', // Local development
     'http://localhost:5173',
     'http://localhost:5174',

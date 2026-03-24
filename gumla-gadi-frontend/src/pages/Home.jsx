@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Clock, MapPin, ArrowRight, Shield, Headphones, TrendingUp, Bus } from 'lucide-react';
 import BusCard from '../components/BusCard';
 import axios from 'axios';
@@ -13,7 +13,7 @@ const Home = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const fetchBuses = async (searchFrom = '', searchTo = '') => {
+    const fetchBuses = useCallback(async (searchFrom = '', searchTo = '') => {
         try {
             setLoading(true);
             setError('');
@@ -29,11 +29,15 @@ const Home = () => {
             setError('Failed to fetch buses. Please try again later.');
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
-        fetchBuses();
-    }, []);
+        // Load initial buses on component mount
+        const loadBuses = async () => {
+            await fetchBuses();
+        };
+        loadBuses();
+    }, [fetchBuses]);
 
     const handleSearch = () => {
         fetchBuses(from, to);
