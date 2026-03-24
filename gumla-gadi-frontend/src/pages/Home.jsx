@@ -66,7 +66,8 @@ const Home = () => {
                             <span className="text-white/90 text-sm font-medium">AI-Powered Hamsafar Assistant</span>
                         </div>
                         <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-                            Safar Asaan, Gumla Ki Pehchaan
+                            Johar<br />
+                            welcome to gumla gadi
                         </h1>
                         <p className="text-lg md:text-xl text-primary-200 max-w-2xl mx-auto">
                             Real-time bus tracking for Gumla Depot & Dunduriya Stand
