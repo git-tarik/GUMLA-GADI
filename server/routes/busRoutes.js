@@ -53,6 +53,38 @@ router.post('/', protect, adminOnly, async (req, res) => {
     }
 });
 
+// @desc    Update a bus
+// @route   PUT /api/buses/:id
+// @access  Private (Admin)
+router.put('/:id', protect, adminOnly, async (req, res) => {
+    try {
+        const { name, source, destination, departureTime, arrivalTime, price, type, stand, contact } = req.body;
+        
+        // Find by custom ID first (since frontend uses that), fallback to _id
+        const bus = await Bus.findOne({ id: req.params.id }) || await Bus.findById(req.params.id);
+
+        if (!bus) {
+            return res.status(404).json({ message: 'Bus not found' });
+        }
+
+        // Update only provided fields
+        if (name) bus.name = name;
+        if (source) bus.source = source;
+        if (destination) bus.destination = destination;
+        if (departureTime) bus.departureTime = departureTime;
+        if (arrivalTime) bus.arrivalTime = arrivalTime;
+        if (price) bus.price = price;
+        if (type) bus.type = type;
+        if (stand) bus.stand = stand;
+        if (contact) bus.contact = contact;
+
+        const updatedBus = await bus.save();
+        res.json(updatedBus);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
 // @desc    Delete a bus
 // @route   DELETE /api/buses/:id
 // @access  Private (Admin)

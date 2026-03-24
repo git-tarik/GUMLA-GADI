@@ -18,16 +18,19 @@ const protect = async (req, res, next) => {
             // Get user from the token without password
             req.user = await User.findById(decoded.id).select('-password');
 
-            next();
+            if (!req.user) {
+                return res.status(401).json({ message: 'User not found' });
+            }
+
+            return next();
         } catch (error) {
-            console.error(error);
-            res.status(401).json({ message: 'Not authorized' });
+            // Log error securely (do not expose details in production)
+            console.error('Auth Error:', error.message);
+            return res.status(401).json({ message: 'Not authorized' });
         }
     }
 
-    if (!token) {
-        res.status(401).json({ message: 'Not authorized, no token' });
-    }
+    return res.status(401).json({ message: 'Not authorized, no token' });
 };
 
 const adminOnly = (req, res, next) => {

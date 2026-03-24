@@ -16,8 +16,25 @@ const registerUser = async (req, res) => {
     const { name, email, phone, password } = req.body;
 
     try {
+        // Input validation
         if (!name || !email || !password) {
             return res.status(400).json({ message: 'Please add all required fields' });
+        }
+
+        // Email format validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
+        // Password strength validation (minimum 6 characters)
+        if (password.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+        }
+
+        // Name validation (minimum 2 characters)
+        if (name.length < 2) {
+            return res.status(400).json({ message: 'Name must be at least 2 characters long' });
         }
 
         // Check if user exists
@@ -59,6 +76,17 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        // Input validation
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Please provide email and password' });
+        }
+
+        // Email format validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
         // Check for user email
         const user = await User.findOne({ email });
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Bus, Shield, MapPin, Clock } from 'lucide-react';
+import { Plus, Trash2, Bus, Shield, MapPin, Clock, Edit2, X } from 'lucide-react';
 import config from '../config';
 
 const AdminDashboard = () => {
@@ -24,6 +24,10 @@ const AdminDashboard = () => {
         type: 'Non-AC'
     });
     const [message, setMessage] = useState({ type: '', text: '' });
+    
+    // Edit Mode State
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
         if (!user || user.role !== 'admin') {
@@ -59,12 +63,19 @@ const AdminDashboard = () => {
                 },
             };
 
-            await axios.post(`${config.API_BASE_URL}/api/buses`, {
-                ...formData,
-                id: Math.floor(Math.random() * 100000)
-            }, configHeaders);
+            if (isEditMode) {
+                // Update existing bus
+                await axios.put(`${config.API_BASE_URL}/api/buses/${editingId}`, formData, configHeaders);
+                setMessage({ type: 'success', text: 'Bus Updated Successfully' });
+            } else {
+                // Create new bus
+                await axios.post(`${config.API_BASE_URL}/api/buses`, {
+                    ...formData,
+                    id: Math.floor(Math.random() * 100000)
+                }, configHeaders);
+                setMessage({ type: 'success', text: 'Bus Added Successfully' });
+            }
 
-            setMessage({ type: 'success', text: 'Bus Added Successfully' });
             setFormData({
                 name: '',
                 source: '',
@@ -76,9 +87,11 @@ const AdminDashboard = () => {
                 stand: 'Gumla Depot',
                 type: 'Non-AC'
             });
+            setIsEditMode(false);
+            setEditingId(null);
             fetchBuses();
         } catch (error) {
-            setMessage({ type: 'error', text: error.response?.data?.message || 'Error adding bus' });
+            setMessage({ type: 'error', text: error.response?.data?.message || 'Error saving bus' });
         }
     };
 
@@ -96,6 +109,41 @@ const AdminDashboard = () => {
                 alert(error.response?.data?.message || 'Error deleting bus');
             }
         }
+    };
+
+    const handleEdit = (bus) => {
+        setFormData({
+            name: bus.name,
+            source: bus.source,
+            destination: bus.destination,
+            price: bus.price,
+            departureTime: bus.departureTime,
+            arrivalTime: bus.arrivalTime,
+            contact: bus.contact,
+            stand: bus.stand,
+            type: bus.type
+        });
+        setIsEditMode(true);
+        setEditingId(bus.id);
+        // Scroll to form
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleCancelEdit = () => {
+        setFormData({
+            name: '',
+            source: '',
+            destination: '',
+            price: '',
+            departureTime: '',
+            arrivalTime: '',
+            contact: '',
+            stand: 'Gumla Depot',
+            type: 'Non-AC'
+        });
+        setIsEditMode(false);
+        setEditingId(null);
+        setMessage({ type: '', text: '' });
     };
 
     if (loading) return (
@@ -134,10 +182,10 @@ const AdminDashboard = () => {
                 <div className="lg:col-span-1">
                     <div className="bg-white rounded-2xl shadow-card border border-gray-100 p-6 sticky top-24">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="bg-primary-50 p-2 rounded-xl">
-                                <Plus className="h-5 w-5 text-primary-500" />
+                            <div className={`p-2 rounded-xl ${isEditMode ? 'bg-accent-50' : 'bg-primary-50'}`}>
+                                {isEditMode ? <Edit2 className="h-5 w-5 text-accent-500" /> : <Plus className="h-5 w-5 text-primary-500" />}
                             </div>
-                            <h2 className="text-lg font-bold text-secondary-500">Add New Bus</h2>
+                            <h2 className="text-lg font-bold text-secondary-500">{isEditMode ? 'Edit Bus' : 'Add New Bus'}</h2>
                         </div>
 
                         {message.text && (
@@ -208,9 +256,19 @@ const AdminDashboard = () => {
                             </div>
 
                             <button type="submit" className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-                                <Plus size={18} />
-                                Add Bus
+                                {isEditMode ? <Edit2 size={18} /> : <Plus size={18} />}
+                                {isEditMode ? 'Update Bus' : 'Add Bus'}
                             </button>
+                            {isEditMode && (
+                                <button 
+                                    type="button"
+                                    onClick={handleCancelEdit} 
+                                    className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 rounded-xl transition-all flex items-center justify-center gap-2"
+                                >
+                                    <X size={18} />
+                                    Cancel
+                                </button>
+                            )}
                         </form>
                     </div>
                 </div>
@@ -263,12 +321,22 @@ const AdminDashboard = () => {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right">
-                                                <button
-                                                    onClick={() => handleDelete(bus.id)}
-                                                    className="text-red-500 hover:text-red-600 bg-red-50 p-2.5 rounded-xl hover:bg-red-100 transition-all"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </button>
+                                                <div className="flex items-center gap-2 justify-end">
+                                                    <button
+                                                        onClick={() => handleEdit(bus)}
+                                                        className="text-blue-500 hover:text-blue-600 bg-blue-50 p-2.5 rounded-xl hover:bg-blue-100 transition-all"
+                                                        title="Edit Bus"
+                                                    >
+                                                        <Edit2 className="h-4 w-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(bus.id)}
+                                                        className="text-red-500 hover:text-red-600 bg-red-50 p-2.5 rounded-xl hover:bg-red-100 transition-all"
+                                                        title="Delete Bus"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
