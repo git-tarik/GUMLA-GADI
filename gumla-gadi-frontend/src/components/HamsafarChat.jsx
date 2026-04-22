@@ -139,16 +139,22 @@ const HamsafarChat = () => {
                             </form>
                         </>
                     ) : (
-                        <div className="h-80 p-4 bg-gray-50 flex flex-col items-center justify-center text-center">
-                            <Bot size={40} className="text-primary-400 mb-4" />
-                            <h4 className="font-bold text-gray-800">Welcome to HamsafarAI!</h4>
-                            <p className="text-gray-600 text-sm mb-6">Please log in to chat with your travel assistant.</p>
+                        <div className="h-96 p-6 bg-gray-50 flex flex-col items-center justify-center text-center">
+                            <div className="bg-gradient-to-br from-primary-100 to-secondary-100 p-5 rounded-full mb-5">
+                                <Bot size={48} className="text-primary-600" />
+                            </div>
+                            <h4 className="font-bold text-xl text-gray-800 mb-2">Welcome to HamsafarAI!</h4>
+                            <p className="text-gray-500 text-sm mb-8 max-w-xs">
+                                Your personal travel assistant is ready. Please log in to start the conversation.
+                            </p>
                             <button
                                 onClick={handleGuestInteraction}
-                                className="bg-primary-500 text-white px-6 py-2.5 rounded-xl hover:bg-primary-600 transition-all flex items-center gap-2 shadow-sm hover:shadow-md"
+                                className="group relative inline-flex items-center justify-center px-8 py-3 text-sm font-bold text-white bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-primary-300"
                             >
-                                <LogIn size={16} />
-                                Login to Chat
+                                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary-600 to-secondary-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></span>
+                                <span className="relative">
+                                    Login to Get Started
+                                </span>
                             </button>
                         </div>
                     )}
