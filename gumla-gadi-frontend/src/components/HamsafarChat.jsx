@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { MessageCircle, X, Send, Bot, Sparkles } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, Sparkles, LogIn } from 'lucide-react';
 import config from '../config';
+import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext';
 
 const HamsafarChat = () => {
+    const { user } = useAuth();
+    const { openModal } = useModal();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
         { text: "Namaste! Chaliye apke sath chalein. Bataiye kahan jana hai?", sender: 'ai' }
@@ -22,7 +26,7 @@ const HamsafarChat = () => {
 
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!input.trim()) return;
+        if (!input.trim() || !user) return;
 
         const userMessage = { text: input, sender: 'user' };
         setMessages(prev => [...prev, userMessage]);
@@ -32,6 +36,10 @@ const HamsafarChat = () => {
         try {
             const response = await axios.post(`${config.AI_API_URL}/chat`, {
                 query: input
+            }, {
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                }
             });
 
             const aiMessage = { text: response.data.response, sender: 'ai' };
@@ -43,6 +51,11 @@ const HamsafarChat = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleGuestInteraction = () => {
+        openModal('login');
+        setIsOpen(false);
     };
 
     return (
@@ -73,54 +86,72 @@ const HamsafarChat = () => {
                         </button>
                     </div>
 
-                    {/* Messages Area */}
-                    <div className="h-80 overflow-y-auto p-4 bg-gray-50 space-y-3">
-                        {messages.map((msg, index) => (
-                            <div
-                                key={index}
-                                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <div
-                                    className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${msg.sender === 'user'
-                                        ? 'bg-primary-500 text-white rounded-br-md'
-                                        : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-md'
-                                        }`}
-                                >
-                                    {msg.text}
-                                </div>
-                            </div>
-                        ))}
-                        {loading && (
-                            <div className="flex justify-start">
-                                <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-md shadow-sm border border-gray-100">
-                                    <div className="flex items-center gap-1">
-                                        <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                                        <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                                        <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    {/* Content Area */}
+                    {user ? (
+                        <>
+                            {/* Messages Area */}
+                            <div className="h-80 overflow-y-auto p-4 bg-gray-50 space-y-3">
+                                {messages.map((msg, index) => (
+                                    <div
+                                        key={index}
+                                        className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                                    >
+                                        <div
+                                            className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ${msg.sender === 'user'
+                                                ? 'bg-primary-500 text-white rounded-br-md'
+                                                : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-md'
+                                                }`}
+                                        >
+                                            {msg.text}
+                                        </div>
                                     </div>
-                                </div>
+                                ))}
+                                {loading && (
+                                    <div className="flex justify-start">
+                                        <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-md shadow-sm border border-gray-100">
+                                            <div className="flex items-center gap-1">
+                                                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                                <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div ref={messagesEndRef} />
                             </div>
-                        )}
-                        <div ref={messagesEndRef} />
-                    </div>
 
-                    {/* Input Area */}
-                    <form onSubmit={handleSend} className="p-3 bg-white border-t border-gray-100 flex gap-2">
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            placeholder="Ask about buses, routes..."
-                            className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 text-sm transition-all"
-                        />
-                        <button
-                            type="submit"
-                            disabled={loading || !input.trim()}
-                            className="bg-primary-500 text-white p-2.5 rounded-xl hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
-                        >
-                            <Send size={18} />
-                        </button>
-                    </form>
+                            {/* Input Area */}
+                            <form onSubmit={handleSend} className="p-3 bg-white border-t border-gray-100 flex gap-2">
+                                <input
+                                    type="text"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    placeholder="Ask about buses, routes..."
+                                    className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 text-sm transition-all"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={loading || !input.trim()}
+                                    className="bg-primary-500 text-white p-2.5 rounded-xl hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
+                                >
+                                    <Send size={18} />
+                                </button>
+                            </form>
+                        </>
+                    ) : (
+                        <div className="h-80 p-4 bg-gray-50 flex flex-col items-center justify-center text-center">
+                            <Bot size={40} className="text-primary-400 mb-4" />
+                            <h4 className="font-bold text-gray-800">Welcome to HamsafarAI!</h4>
+                            <p className="text-gray-600 text-sm mb-6">Please log in to chat with your travel assistant.</p>
+                            <button
+                                onClick={handleGuestInteraction}
+                                className="bg-primary-500 text-white px-6 py-2.5 rounded-xl hover:bg-primary-600 transition-all flex items-center gap-2 shadow-sm hover:shadow-md"
+                            >
+                                <LogIn size={16} />
+                                Login to Chat
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
 
