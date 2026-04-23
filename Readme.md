@@ -1,63 +1,320 @@
-# 🚌 Gumla Gadi (Gumla Bus Tracking System)
+# Gumla Gadi
 
-> A centralized MERN Stack web application to track bus timings, routes, and details for commuters in Gumla, Jharkhand.
+Gumla Gadi is a full-stack bus information platform for Gumla, Jharkhand. It helps users search buses by route, view stand-specific schedule details, manage bus records through an admin panel, and ask travel questions through an AI assistant called `HamsafarAI`.
 
-![Project Status](https://img.shields.io/badge/Status-In%20Development-orange)
-![Tech Stack](https://img.shields.io/badge/Stack-MERN-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+This repository is a small monorepo with three services:
 
-## 📖 Project Overview
-**Gumla Gadi** is designed to solve the transportation information gap in Gumla. Currently, passengers struggle to know exact bus timings and specific departure locations (Main Depot vs. Dunduriya Stand). 
+- `gumla-gadi-frontend`: React + Vite client
+- `server`: Express + MongoDB API
+- `ai-service`: FastAPI + LangChain + Gemini-powered assistant
 
-This project provides a digital interface to search for buses, view accurate schedules, and interact with an **AI Chatbot** for natural language queries (e.g., *"Ranchi jane wali next bus kab hai?"*).
+## What The Project Does
 
-### 🌟 Key Features
-* **Dual-Depot Logic:** distinct filtering for **Gumla Bus Stand** (Main) and **Dunduriya Bus Stand**.
-* **Search & Filter:** Find buses by Source, Destination, and Time.
-* **AI Chatbot Assistant:** A smart assistant to answer travel queries instantly.
-* **Admin Dashboard:** For bus operators to update timings and fleet details.
-* **Responsive UI:** Optimized for mobile users (commuters).
+- Lets commuters search buses by source and destination
+- Shows bus details such as departure time, arrival time, fare, contact number, type, and stand
+- Supports user signup and login with JWT-based authentication
+- Provides an admin-only dashboard to add, edit, and delete bus records
+- Includes an AI chat widget that answers bus and travel-related queries in Hinglish
 
----
+## Current Stack
 
-## 🏗️ Architecture & Modules
+### Frontend
 
-The project is organized into a Monorepo structure containing three core modules:
+- React 19
+- Vite
+- React Router
+- Axios
+- Tailwind CSS
+- Lucide React
 
-### 1. 🎨 Frontend (`/client`)
-* **Framework:** React.js (Vite)
-* **Styling:** Tailwind CSS (for mobile-first design)
-* **State Management:** Context API / Redux Toolkit
-* **Routing:** React Router DOM
-* **Key Components:**
-    * `BusSearchCard`: Displays timing and depot badges.
-    * `ChatWidget`: Floating UI for the AI assistant.
+### Backend
 
-### 2. ⚙️ Backend (`/server`)
-* **Runtime:** Node.js
-* **Framework:** Express.js
-* **Authentication:** JWT (JSON Web Tokens)
-* **AI Integration:** LangChain / OpenAI API (or Gemini API) for the Chatbot logic.
-* **API Structure:** RESTful architecture.
+- Node.js
+- Express
+- MongoDB with Mongoose
+- JWT authentication
+- bcryptjs
+- CORS + dotenv
 
-### 3. 🗄️ Database (`MongoDB`)
-* **Platform:** MongoDB Atlas (Cloud)
-* **Core Models:**
-    * `User`: Admin and Public user data.
-    * `Bus`: Vehicle details (Reg No, Operator Name).
-    * `Schedule`: The core logic linking a Bus to a Route (Source, Destination, Via) and Time.
-    * *Special Field:* `stand_location` (Enum: 'GUMLA_MAIN', 'DUNDURIYA').
+### AI Service
 
----
+- FastAPI
+- Uvicorn
+- LangChain Core
+- `langchain-google-genai`
+- DuckDuckGo Search
+- Requests + python-dotenv
 
-## 🤖 The AI Chatbot Module
-The application includes a Generative AI module located in `server/routes/aiRoutes.js`.
+## Repository Structure
 
-* **Function:** It acts as a "Concierge".
-* **Workflow:**
-    1.  User asks: *"Sham ko 5 baje Simdega ke liye bus hai?"*
-    2.  Chatbot converts natural language to a Database Query (Text-to-SQL or Vector Search).
-    3.  Fetches live data from the MongoDB `Schedule` collection.
-    4.  Responds in simple Hinglish/English.
+```text
+GUMLA-GADI/
+|-- Readme.md
+|-- gumla-gadi-frontend/
+|   |-- src/
+|   |   |-- components/
+|   |   |-- context/
+|   |   |-- pages/
+|   |   |-- App.jsx
+|   |   |-- config.js
+|   |   `-- main.jsx
+|   `-- package.json
+|-- server/
+|   |-- config/
+|   |-- controllers/
+|   |-- middleware/
+|   |-- models/
+|   |-- routes/
+|   |-- index.js
+|   |-- generate-jwt-secret.js
+|   `-- package.json
+|-- ai-service/
+|   |-- main.py
+|   |-- rag_chain.py
+|   `-- requirements.txt
+```
 
----
+## Main Features
+
+### 1. Bus Search
+
+The home page fetches bus data from the backend and supports filtering with:
+
+- `from`
+- `to`
+
+The frontend calls:
+
+- `GET /api/buses`
+- `GET /api/buses?from=Gumla&to=Ranchi`
+
+### 2. Bus Details
+
+Each bus card links to a dedicated detail page showing:
+
+- route
+- departure and arrival time
+- fare
+- contact number
+- stand name
+- bus type
+
+### 3. Authentication
+
+The backend supports:
+
+- `POST /api/auth/signup`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+
+User sessions are stored in `localStorage` on the frontend as `userInfo`.
+
+### 4. Admin Dashboard
+
+Users with role `admin` can:
+
+- create buses
+- update buses
+- delete buses
+- manage the current list of routes and schedules
+
+Protected bus routes use JWT middleware plus an `adminOnly` guard.
+
+### 5. HamsafarAI Assistant
+
+The floating chat widget in the frontend talks to the Python AI service at:
+
+- `POST /chat`
+
+The assistant can:
+
+- fetch bus data from the Express API
+- search the web for general travel information
+- answer in Hinglish
+- include stand information when sharing bus details
+
+## Data Models
+
+### User
+
+Stored in MongoDB with:
+
+- `name`
+- `email`
+- `phone`
+- `password`
+- `role` with values `user` or `admin`
+
+Passwords are hashed with bcrypt before save.
+
+### Bus
+
+Stored in MongoDB with:
+
+- `id`
+- `name`
+- `source`
+- `destination`
+- `departureTime`
+- `arrivalTime`
+- `price`
+- `type` with values `AC` or `Non-AC`
+- `stand` with values `Gumla Depot` or `Dunduriya`
+- `contact`
+
+## API Reference
+
+### Express API
+
+Base URL: `http://localhost:5000`
+
+#### Public routes
+
+- `GET /` - health-style text response
+- `GET /api/buses` - list all buses
+- `GET /api/buses?from=value&to=value` - filter buses
+- `POST /api/auth/signup` - register a new user
+- `POST /api/auth/login` - authenticate a user
+
+#### Protected routes
+
+- `GET /api/auth/me` - get current user
+- `POST /api/buses` - create a bus, admin only
+- `PUT /api/buses/:id` - update a bus, admin only
+- `DELETE /api/buses/:id` - delete a bus, admin only
+
+### AI Service API
+
+Base URL: `http://localhost:8000`
+
+- `GET /` - returns service status
+- `POST /chat` - accepts `{ "query": "..." }` and returns `{ "response": "..." }`
+
+## Environment Variables
+
+Create environment files manually for the services that need them.
+
+### `server/.env`
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+FRONTEND_URL=http://localhost:5173
+```
+
+### `ai-service/.env`
+
+```env
+GOOGLE_API_KEY=your_google_gemini_api_key
+BACKEND_URL=http://localhost:5000
+```
+
+### `gumla-gadi-frontend/.env`
+
+```env
+VITE_API_BASE_URL=http://localhost:5000
+VITE_AI_API_URL=http://localhost:8000
+```
+
+## Local Setup
+
+### Prerequisites
+
+- Node.js and npm
+- Python 3.10+
+- MongoDB Atlas or local MongoDB
+- A Google Gemini API key
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repo-url>
+cd GUMLA-GADI
+```
+
+### 2. Install frontend dependencies
+
+```bash
+cd gumla-gadi-frontend
+npm install
+```
+
+### 3. Install backend dependencies
+
+```bash
+cd ../server
+npm install
+```
+
+### 4. Install AI service dependencies
+
+```bash
+cd ../ai-service
+pip install -r requirements.txt
+```
+
+## Running The Project
+
+Start all three services in separate terminals.
+
+### Frontend
+
+```bash
+cd gumla-gadi-frontend
+npm run dev
+```
+
+Runs by default on `http://localhost:5173`.
+
+### Backend
+
+```bash
+cd server
+npm run dev
+```
+
+Runs by default on `http://localhost:5000`.
+
+### AI service
+
+```bash
+cd ai-service
+python main.py
+```
+
+Runs by default on `http://localhost:8000`.
+
+## How The AI Flow Works
+
+1. The user opens the `HamsafarAI` chat widget in the frontend.
+2. The frontend sends the query to the FastAPI service.
+3. The AI service uses Gemini with tool calling.
+4. For bus schedule questions, it calls the Express API through `fetch_bus_data`.
+5. For general travel questions, it uses DuckDuckGo search.
+6. The final answer is returned to the frontend and rendered in the chat widget.
+
+## Important Implementation Notes
+
+- The frontend and backend are already wired together through `src/config.js` and environment variables.
+- Bus filtering is currently source and destination based; there is no dedicated time filter endpoint yet.
+- Admin access depends on the `role` field in the `User` document.
+- The AI service keeps chat history in a global in-memory list, so conversation state is not isolated per user session.
+- The frontend sends a bearer token to the AI service, but the current FastAPI service does not validate it.
+- There are currently no automated tests configured in this repository.
+
+## Suggested Improvements
+
+- Add per-user chat memory instead of shared global memory
+- Add validation for bus creation and update payloads
+- Add automated tests for frontend, backend, and AI service
+- Add pagination or search optimization for larger bus datasets
+- Add seed scripts for demo data
+- Add Docker support for running all services together
+- Add API documentation with Swagger or OpenAPI for the Express service
+
+## Status
+
+This project is functional as a development-stage prototype and already includes the main commuter flow, admin bus management, and AI-assisted travel help.
+
+
