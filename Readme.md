@@ -317,4 +317,7 @@ Runs by default on `http://localhost:8000`.
 
 This project is functional as a development-stage prototype and already includes the main commuter flow, admin bus management, and AI-assisted travel help.
 
+## License
+
+This project is licensed under the MIT License. See [LICENSE](/c:/GUMLA-GADI/LICENSE).
 
