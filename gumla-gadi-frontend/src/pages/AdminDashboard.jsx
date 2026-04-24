@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -29,24 +29,24 @@ const AdminDashboard = () => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingId, setEditingId] = useState(null);
 
+    const fetchBuses = useCallback(async () => {
+        try {
+            const response = await axios.get(`${config.API_BASE_URL}/api/buses`);
+            setBuses(response.data);
+        } catch (error) {
+            console.error('Error fetching buses:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
         if (!user || user.role !== 'admin') {
             navigate('/');
         } else {
             fetchBuses();
         }
-    }, [user, navigate]);
-
-    const fetchBuses = async () => {
-        try {
-            const response = await axios.get(`${config.API_BASE_URL}/api/buses`);
-            setBuses(response.data);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching buses:', error);
-            setLoading(false);
-        }
-    };
+    }, [user, navigate, fetchBuses]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

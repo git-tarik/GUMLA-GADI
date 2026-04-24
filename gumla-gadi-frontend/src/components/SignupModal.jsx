@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { User, Mail, Lock, Phone, X, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useModal } from '../context/ModalContext';
+import GoogleAuthButton from './GoogleAuthButton';
 import logo from '../assets/gumla-gadi-logo.png';
 
 const SignupModal = () => {
@@ -35,6 +36,15 @@ const SignupModal = () => {
 
     const handleLoginToggle = () => {
         toggleModals('signup', 'login');
+    };
+
+    const handleGoogleAuthenticated = () => {
+        setError('');
+        closeModal('signup');
+        setName('');
+        setEmail('');
+        setPhone('');
+        setPassword('');
     };
 
     if (!modals.signup) return null;
@@ -80,6 +90,19 @@ const SignupModal = () => {
                                     <p className="text-red-700 text-sm font-medium">{error}</p>
                                 </div>
                             )}
+
+                            <div className="mb-5">
+                                <GoogleAuthButton
+                                    onAuthenticated={handleGoogleAuthenticated}
+                                    onError={setError}
+                                />
+                            </div>
+
+                            <div className="mb-5 flex items-center gap-3">
+                                <div className="flex-1 h-px bg-gray-300" />
+                                <span className="text-gray-500 text-sm font-medium">or</span>
+                                <div className="flex-1 h-px bg-gray-300" />
+                            </div>
 
                             {/* Form */}
                             <form onSubmit={handleSubmit} className="space-y-5">
@@ -170,15 +193,8 @@ const SignupModal = () => {
                                 </button>
                             </form>
 
-                            {/* Divider */}
-                            <div className="my-4 flex items-center gap-3">
-                                <div className="flex-1 h-px bg-gray-300" />
-                                <span className="text-gray-500 text-sm font-medium">or</span>
-                                <div className="flex-1 h-px bg-gray-300" />
-                            </div>
-
                             {/* Login Link */}
-                            <div className="text-center">
+                            <div className="text-center mt-5">
                                 <p className="text-gray-600 text-sm">
                                     Already have an account?{' '}
                                     <button

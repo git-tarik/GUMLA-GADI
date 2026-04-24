@@ -1,4 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useState, useContext } from 'react';
 import axios from 'axios';
 import config from '../config';
 
@@ -7,17 +8,15 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        // Check localStorage for existing session
+    const [user, setUser] = useState(() => {
         const storedUser = localStorage.getItem('userInfo');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            return JSON.parse(storedUser);
         }
-        setLoading(false);
-    }, []);
+
+        return null;
+    });
+    const [loading] = useState(false);
 
     const login = async (email, password) => {
         const response = await axios.post(`${config.API_BASE_URL}/api/auth/login`, { email, password });
@@ -33,13 +32,20 @@ export const AuthProvider = ({ children }) => {
         return response.data;
     };
 
+    const googleLogin = async (credential) => {
+        const response = await axios.post(`${config.API_BASE_URL}/api/auth/google`, { credential });
+        localStorage.setItem('userInfo', JSON.stringify(response.data));
+        setUser(response.data);
+        return response.data;
+    };
+
     const logout = () => {
         localStorage.removeItem('userInfo');
         setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, signup, googleLogin, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

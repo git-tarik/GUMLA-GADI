@@ -14,8 +14,9 @@ const Navbar = () => {
 
     // Close sidebar on route change
     useEffect(() => {
-        setIsOpen(false);
-    }, [location]);
+        const frameId = requestAnimationFrame(() => setIsOpen(false));
+        return () => cancelAnimationFrame(frameId);
+    }, [location.pathname]);
 
     // Prevent body scroll when sidebar is open
     useEffect(() => {

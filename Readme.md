@@ -13,6 +13,7 @@ This repository is a small monorepo with three services:
 - Lets commuters search buses by source and destination
 - Shows bus details such as departure time, arrival time, fare, contact number, type, and stand
 - Supports user signup and login with JWT-based authentication
+- Supports "Continue with Google" signup/login through Google Identity Services
 - Provides an admin-only dashboard to add, edit, and delete bus records
 - Includes an AI chat widget that answers bus and travel-related queries in Hinglish
 
@@ -105,6 +106,7 @@ The backend supports:
 
 - `POST /api/auth/signup`
 - `POST /api/auth/login`
+- `POST /api/auth/google`
 - `GET /api/auth/me`
 
 User sessions are stored in `localStorage` on the frontend as `userInfo`.
@@ -175,6 +177,7 @@ Base URL: `http://localhost:5000`
 - `GET /api/buses?from=value&to=value` - filter buses
 - `POST /api/auth/signup` - register a new user
 - `POST /api/auth/login` - authenticate a user
+- `POST /api/auth/google` - authenticate or register a user with a Google ID token
 
 #### Protected routes
 
@@ -201,6 +204,7 @@ PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 FRONTEND_URL=http://localhost:5173
+GOOGLE_CLIENT_ID=your_google_oauth_web_client_id.apps.googleusercontent.com
 ```
 
 ### `ai-service/.env`
@@ -215,6 +219,7 @@ BACKEND_URL=http://localhost:5000
 ```env
 VITE_API_BASE_URL=http://localhost:5000
 VITE_AI_API_URL=http://localhost:8000
+VITE_GOOGLE_CLIENT_ID=your_google_oauth_web_client_id.apps.googleusercontent.com
 ```
 
 ## Local Setup
@@ -320,4 +325,3 @@ This project is functional as a development-stage prototype and already includes
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](/c:/GUMLA-GADI/LICENSE).
-

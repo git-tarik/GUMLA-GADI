@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LogIn, Mail, Lock, BusFront } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import GoogleAuthButton from '../components/GoogleAuthButton';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -23,6 +24,11 @@ const Login = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleGoogleAuthenticated = () => {
+        setError('');
+        navigate('/dashboard');
     };
 
     return (
@@ -64,6 +70,19 @@ const Login = () => {
                     <div className="text-center mb-8">
                         <h2 className="text-2xl font-bold text-secondary-500 mb-2">Sign in to your account</h2>
                         <p className="text-gray-500">Enter your credentials to continue</p>
+                    </div>
+
+                    <div className="mb-6">
+                        <GoogleAuthButton
+                            onAuthenticated={handleGoogleAuthenticated}
+                            onError={setError}
+                        />
+                    </div>
+
+                    <div className="mb-6 flex items-center gap-3">
+                        <div className="flex-1 h-px bg-gray-300" />
+                        <span className="text-gray-500 text-sm font-medium">or</span>
+                        <div className="flex-1 h-px bg-gray-300" />
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-5">

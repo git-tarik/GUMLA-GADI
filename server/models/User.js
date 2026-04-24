@@ -5,7 +5,15 @@ const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: false }, // Optional for now to avoid breaking existing users
-    password: { type: String, required: true },
+    password: {
+        type: String,
+        required: function () {
+            return this.authProvider === 'local';
+        }
+    },
+    googleId: { type: String, unique: true, sparse: true },
+    avatar: { type: String },
+    authProvider: { type: String, enum: ['local', 'google'], default: 'local' },
     role: { type: String, enum: ['user', 'admin'], default: 'user' }
 }, {
     timestamps: true
@@ -13,13 +21,17 @@ const userSchema = new mongoose.Schema({
 
 // Match user entered password to hashed password in database
 userSchema.methods.matchPassword = async function (enteredPassword) {
+    if (!this.password) {
+        return false;
+    }
+
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
 // Encrypt password using bcrypt
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        next();
+userSchema.pre('save', async function () {
+    if (!this.isModified('password') || !this.password) {
+        return;
     }
 
     const salt = await bcrypt.genSalt(10);

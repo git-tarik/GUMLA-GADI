@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Generate JWT
 const generateToken = (id, role) => {
@@ -8,6 +11,17 @@ const generateToken = (id, role) => {
         expiresIn: '30d',
     });
 };
+
+const userResponse = (user) => ({
+    _id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    avatar: user.avatar,
+    authProvider: user.authProvider,
+    token: generateToken(user._id, user.role),
+});
 
 // @desc    Register new user
 // @route   POST /api/auth/signup
@@ -53,14 +67,7 @@ const registerUser = async (req, res) => {
         });
 
         if (user) {
-            res.status(201).json({
-                _id: user.id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                role: user.role,
-                token: generateToken(user._id, user.role),
-            });
+            res.status(201).json(userResponse(user));
         } else {
             res.status(400).json({ message: 'Invalid user data' });
         }
@@ -91,19 +98,65 @@ const loginUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user && (await user.matchPassword(password))) {
-            res.json({
-                _id: user.id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                role: user.role,
-                token: generateToken(user._id, user.role),
-            });
+            res.json(userResponse(user));
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Authenticate or register a user with Google
+// @route   POST /api/auth/google
+// @access  Public
+const googleAuth = async (req, res) => {
+    const { credential } = req.body;
+
+    try {
+        if (!process.env.GOOGLE_CLIENT_ID) {
+            return res.status(500).json({ message: 'Google authentication is not configured' });
+        }
+
+        if (!credential) {
+            return res.status(400).json({ message: 'Google credential is required' });
+        }
+
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+
+        if (!payload?.email || !payload.email_verified) {
+            return res.status(401).json({ message: 'Google account email is not verified' });
+        }
+
+        const email = payload.email.toLowerCase();
+        let user = await User.findOne({ email });
+
+        if (user) {
+            user.googleId = user.googleId || payload.sub;
+            user.avatar = payload.picture || user.avatar;
+            if (user.authProvider !== 'google' && !user.password) {
+                user.authProvider = 'google';
+            }
+            await user.save();
+        } else {
+            user = await User.create({
+                name: payload.name || email.split('@')[0],
+                email,
+                googleId: payload.sub,
+                avatar: payload.picture,
+                authProvider: 'google',
+            });
+        }
+
+        res.json(userResponse(user));
+    } catch (error) {
+        console.error('Google Auth Error:', error.message);
+        res.status(401).json({ message: 'Google authentication failed' });
     }
 };
 
@@ -117,6 +170,8 @@ const getMe = async (req, res) => {
             name: req.user.name,
             email: req.user.email,
             phone: req.user.phone,
+            avatar: req.user.avatar,
+            authProvider: req.user.authProvider,
             role: req.user.role
         }
         res.status(200).json(user);
@@ -128,5 +183,6 @@ const getMe = async (req, res) => {
 module.exports = {
     registerUser,
     loginUser,
+    googleAuth,
     getMe,
 };
