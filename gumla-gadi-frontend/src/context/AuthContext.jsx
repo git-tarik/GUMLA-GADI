@@ -39,13 +39,20 @@ export const AuthProvider = ({ children }) => {
         return response.data;
     };
 
+    const truecallerLogin = async (accessToken) => {
+        const response = await axios.post(`${config.API_BASE_URL}/api/auth/truecaller`, { accessToken });
+        localStorage.setItem('userInfo', JSON.stringify(response.data));
+        setUser(response.data);
+        return response.data;
+    };
+
     const logout = () => {
         localStorage.removeItem('userInfo');
         setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, signup, googleLogin, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, signup, googleLogin, truecallerLogin, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

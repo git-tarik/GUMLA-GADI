@@ -160,6 +160,78 @@ const googleAuth = async (req, res) => {
     }
 };
 
+// @desc    Authenticate or register a user with Truecaller
+// @route   POST /api/auth/truecaller
+// @access  Public
+const truecallerAuth = async (req, res) => {
+    const { accessToken } = req.body;
+
+    try {
+        if (!process.env.TRUECALLER_CLIENT_ID || !process.env.TRUECALLER_CLIENT_SECRET) {
+            return res.status(500).json({ message: 'Truecaller authentication is not configured' });
+        }
+
+        if (!accessToken) {
+            return res.status(400).json({ message: 'Truecaller access token is required' });
+        }
+
+        // Verify access token with Truecaller API and get user profile
+        const axios = require('axios');
+        const profileResponse = await axios.get('https://api.truecaller.com/v1/profile', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const profile = profileResponse.data;
+
+        if (!profile?.data?.phoneNumber) {
+            return res.status(401).json({ message: 'Unable to retrieve Truecaller profile information' });
+        }
+
+        // Extract user information
+        const truecallerId = profile.data.id;
+        const phone = profile.data.phoneNumber;
+        const name = profile.data.firstName || 'Truecaller User';
+        // Note: Truecaller doesn't provide email in some regions, so we create one from phone
+        const email = profile.data.email || `${phone}@truecaller.com`;
+
+        let user = await User.findOne({ $or: [{ email }, { truecallerId }] });
+
+        if (user) {
+            // Update existing user
+            user.truecallerId = user.truecallerId || truecallerId;
+            user.phone = phone;
+            user.avatar = profile.data.profileImage || user.avatar;
+            if (user.authProvider !== 'truecaller' && !user.password) {
+                user.authProvider = 'truecaller';
+            }
+            await user.save();
+        } else {
+            // Create new user
+            user = await User.create({
+                name,
+                email,
+                phone,
+                truecallerId,
+                avatar: profile.data.profileImage,
+                authProvider: 'truecaller',
+            });
+        }
+
+        res.json(userResponse(user));
+    } catch (error) {
+        console.error('Truecaller Auth Error:', error.message);
+        
+        if (error.response?.status === 401) {
+            return res.status(401).json({ message: 'Invalid or expired Truecaller access token' });
+        }
+        
+        res.status(401).json({ message: 'Truecaller authentication failed' });
+    }
+};
+
 // @desc    Get user data
 // @route   GET /api/auth/me
 // @access  Private
@@ -184,5 +256,6 @@ module.exports = {
     registerUser,
     loginUser,
     googleAuth,
+    truecallerAuth,
     getMe,
 };

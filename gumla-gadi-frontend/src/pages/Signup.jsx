@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Mail, Lock, User, Phone, BusFront } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import GoogleAuthButton from '../components/GoogleAuthButton';
+import TruecallerAuthButton from '../components/TruecallerAuthButton';
 
 const Signup = () => {
     const [name, setName] = useState('');
@@ -85,8 +86,12 @@ const Signup = () => {
                         <p className="text-gray-500">Join thousands of travelers</p>
                     </div>
 
-                    <div className="mb-6">
+                    <div className="mb-6 space-y-3">
                         <GoogleAuthButton
+                            onAuthenticated={handleGoogleAuthenticated}
+                            onError={setError}
+                        />
+                        <TruecallerAuthButton
                             onAuthenticated={handleGoogleAuthenticated}
                             onError={setError}
                         />

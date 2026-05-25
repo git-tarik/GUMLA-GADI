@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { LogIn, Mail, Lock, BusFront } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import GoogleAuthButton from '../components/GoogleAuthButton';
+import TruecallerAuthButton from '../components/TruecallerAuthButton';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -72,8 +73,12 @@ const Login = () => {
                         <p className="text-gray-500">Enter your credentials to continue</p>
                     </div>
 
-                    <div className="mb-6">
+                    <div className="mb-6 space-y-3">
                         <GoogleAuthButton
+                            onAuthenticated={handleGoogleAuthenticated}
+                            onError={setError}
+                        />
+                        <TruecallerAuthButton
                             onAuthenticated={handleGoogleAuthenticated}
                             onError={setError}
                         />

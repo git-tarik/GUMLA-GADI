@@ -12,8 +12,9 @@ const userSchema = new mongoose.Schema({
         }
     },
     googleId: { type: String, unique: true, sparse: true },
+    truecallerId: { type: String, unique: true, sparse: true },
     avatar: { type: String },
-    authProvider: { type: String, enum: ['local', 'google'], default: 'local' },
+    authProvider: { type: String, enum: ['local', 'google', 'truecaller'], default: 'local' },
     role: { type: String, enum: ['user', 'admin'], default: 'user' }
 }, {
     timestamps: true
