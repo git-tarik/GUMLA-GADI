@@ -1,28 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import config from '../config';
 
-const TruecallerAuthButton = ({ onAuthenticated, onError, text = 'continue_with' }) => {
-    const buttonRef = useRef(null);
-    const [loadFailed, setLoadFailed] = useState(false);
+const TruecallerAuthButton = ({ onAuthenticated, onError }) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [sdkReady, setSdkReady] = useState(false);
     const { truecallerLogin } = useAuth();
 
     useEffect(() => {
-        if (!config.TRUECALLER_CLIENT_ID || loadFailed) {
-            console.warn('Truecaller config missing or load failed:', {
-                clientId: config.TRUECALLER_CLIENT_ID,
-                loadFailed
-            });
-            return;
-        }
-
-        console.log('Loading Truecaller SDK...');
-
-        // Check if Truecaller SDK is already loaded
-        if (window.Truecaller) {
-            console.log('Truecaller SDK already loaded');
-            initTruecaller();
+        if (!config.TRUECALLER_CLIENT_ID) {
             return;
         }
 
@@ -31,89 +18,88 @@ const TruecallerAuthButton = ({ onAuthenticated, onError, text = 'continue_with'
         script.src = 'https://sdk.truecaller.com/v1/truecaller.js';
         script.async = true;
         script.onload = () => {
-            console.log('Truecaller SDK loaded successfully');
-            initTruecaller();
+            if (window.Truecaller) {
+                try {
+                    window.Truecaller.init({
+                        appKey: config.TRUECALLER_CLIENT_ID,
+                    });
+                    setSdkReady(true);
+                    console.log('Truecaller SDK initialized successfully');
+                } catch (error) {
+                    console.error('Failed to initialize Truecaller:', error);
+                }
+            }
         };
         script.onerror = () => {
-            console.error('Failed to load Truecaller SDK from CDN');
-            setLoadFailed(true);
+            console.error('Failed to load Truecaller SDK');
         };
         document.body.appendChild(script);
 
         return () => {
             // Cleanup
         };
-    }, [loadFailed]);
+    }, []);
 
-    const initTruecaller = async () => {
-        if (!window.Truecaller || !buttonRef.current) {
-            console.warn('Truecaller SDK not available or button ref not set');
+    const handleTruecallerClick = async () => {
+        if (!sdkReady || !window.Truecaller) {
+            onError && onError('Truecaller SDK not ready');
             return;
         }
 
+        setIsLoading(true);
+
         try {
-            console.log('Initializing Truecaller with key:', config.TRUECALLER_CLIENT_ID);
-            
-            window.Truecaller.init({
-                appKey: config.TRUECALLER_CLIENT_ID,
+            // Listen for callback before opening
+            window.Truecaller.onReceProfile(async (profile) => {
+                try {
+                    if (profile.requestId && profile.status === 'success') {
+                        const accessToken = profile.accessToken || profile.token;
+
+                        if (!accessToken) {
+                            throw new Error('No access token from Truecaller');
+                        }
+
+                        // Send token to backend
+                        await truecallerLogin(accessToken);
+                        onAuthenticated && onAuthenticated();
+                    } else if (profile.status === 'cancel') {
+                        onError && onError('Truecaller authentication cancelled');
+                    } else {
+                        throw new Error(profile.reason || 'Truecaller authentication failed');
+                    }
+                } catch (error) {
+                    console.error('Truecaller Auth Error:', error);
+                    onError && onError(error.message || 'Truecaller authentication failed');
+                } finally {
+                    setIsLoading(false);
+                }
             });
 
-            window.Truecaller.build({
-                buttonColor: '#0066FF',
-                buttonText: 'truecaller_default',
-                lang: 'en',
-                hideOption: false,
-            }).render(buttonRef.current);
-
-            console.log('Truecaller button rendered successfully');
-
-            // Listen for callback
-            window.Truecaller.onReceProfile(handleTruecallerResponse);
+            // Open Truecaller verification
+            window.Truecaller.getProfile();
         } catch (error) {
-            console.error('Failed to initialize Truecaller:', error);
-            setLoadFailed(true);
+            console.error('Failed to open Truecaller:', error);
+            onError && onError(error.message || 'Failed to open Truecaller');
+            setIsLoading(false);
         }
     };
 
-    const handleTruecallerResponse = async (profile) => {
-        try {
-            if (profile.requestId && profile.status === 'success') {
-                // Get access token from Truecaller response
-                const accessToken = profile.accessToken || profile.token;
-
-                if (!accessToken) {
-                    throw new Error('No access token from Truecaller');
-                }
-
-                // Send token to backend
-                await truecallerLogin(accessToken);
-                onAuthenticated && onAuthenticated();
-            } else if (profile.status === 'cancel') {
-                onError && onError('Truecaller authentication cancelled');
-            } else {
-                throw new Error(profile.reason || 'Truecaller authentication failed');
-            }
-        } catch (error) {
-            console.error('Truecaller Auth Error:', error);
-            onError && onError(error.message || 'Truecaller authentication failed');
-        }
-    };
-
-    if (loadFailed) {
-        return (
-            <button
-                type="button"
-                disabled
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-500 font-medium rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                title="Truecaller SDK failed to load"
-            >
-                <Phone size={18} />
-                <span>Truecaller unavailable</span>
-            </button>
-        );
+    if (!config.TRUECALLER_CLIENT_ID) {
+        return null;
     }
 
-    return <div ref={buttonRef} id="truecaller-button" />;
+    return (
+        <button
+            type="button"
+            onClick={handleTruecallerClick}
+            disabled={!sdkReady || isLoading}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:border-gray-400"
+            title={sdkReady ? 'Sign in with Truecaller' : 'Loading Truecaller...'}
+        >
+            <Phone size={20} className="text-blue-600" />
+            <span>{isLoading ? 'Verifying...' : 'Continue with Truecaller'}</span>
+        </button>
+    );
 };
 
 export default TruecallerAuthButton;
